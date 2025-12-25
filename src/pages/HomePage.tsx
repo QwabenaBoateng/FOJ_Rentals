@@ -4,10 +4,33 @@ import { RentalCard } from '../components/RentalCard';
 import { RentalItem } from '../types';
 import { useNavigate } from 'react-router-dom';
 
+// Placeholder image URL generator
+const getPlaceholderImage = (text: string) => {
+  const colors = ['#667eea', '#764ba2', '#d946a6', '#c2185b', '#f97316', '#0ea5e9'];
+  const hash = text.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const color = colors[hash % colors.length];
+  return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200'%3E%3Crect fill='${encodeURIComponent(color)}' width='300' height='200'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='16' fill='white' font-weight='bold'%3E${encodeURIComponent(text)}%3C/text%3E%3C/svg%3E`;
+};
+
 export const HomePage = () => {
   const { items, setItems, addToCart } = useStore();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [heroImageUrl, setHeroImageUrl] = useState<string>('');
+  const [promoImageUrl, setPromoImageUrl] = useState<string>('');
+
+  // Load banner images from localStorage
+  useEffect(() => {
+    const savedImages = localStorage.getItem('bannerImages');
+    if (savedImages) {
+      const images = JSON.parse(savedImages);
+      const heroImage = images.find((img: any) => img.type === 'hero');
+      const promoImage = images.find((img: any) => img.type === 'promo');
+      
+      if (heroImage) setHeroImageUrl(heroImage.imageData);
+      if (promoImage) setPromoImageUrl(promoImage.imageData);
+    }
+  }, []);
 
   // Mock data - in real app, this would come from API
   // Chafing Dishes - Row 1
@@ -17,7 +40,7 @@ export const HomePage = () => {
       name: 'Round Chafing Dish Set',
       category: 'chafing-dishes',
       description: 'Complete round chafing dish set with fuel cans',
-      image: 'https://via.placeholder.com/300x200?text=Round+Chafing+Dish',
+      image: getPlaceholderImage('Round Chafing Dish'),
       pricePerDay: 5,
       pricePerWeek: 20,
       pricePerMonth: 50,
@@ -30,7 +53,7 @@ export const HomePage = () => {
       name: 'Rectangular Chafing Dish',
       category: 'chafing-dishes',
       description: 'Professional rectangular chafing dish',
-      image: 'https://via.placeholder.com/300x200?text=Rectangular+Chafing',
+      image: getPlaceholderImage('Rectangular Chafing'),
       pricePerDay: 6,
       pricePerWeek: 24,
       pricePerMonth: 60,
@@ -43,7 +66,7 @@ export const HomePage = () => {
       name: 'Mini Chafing Dish',
       category: 'chafing-dishes',
       description: 'Compact mini chafing dish for appetizers',
-      image: 'https://via.placeholder.com/300x200?text=Mini+Chafing+Dish',
+      image: getPlaceholderImage('Mini Chafing Dish'),
       pricePerDay: 3,
       pricePerWeek: 12,
       pricePerMonth: 30,
@@ -56,7 +79,7 @@ export const HomePage = () => {
       name: 'Deluxe Chafing Dish Collection',
       category: 'chafing-dishes',
       description: 'Premium deluxe chafing dish collection',
-      image: 'https://via.placeholder.com/300x200?text=Deluxe+Chafing',
+      image: getPlaceholderImage('Deluxe Chafing'),
       pricePerDay: 8,
       pricePerWeek: 32,
       pricePerMonth: 80,
@@ -73,7 +96,7 @@ export const HomePage = () => {
       name: 'Chiavari Chairs',
       category: 'chairs',
       description: 'Elegant Chiavari chairs perfect for events',
-      image: 'https://via.placeholder.com/300x200?text=Chiavari+Chair',
+      image: getPlaceholderImage('Chiavari Chair'),
       pricePerDay: 2,
       pricePerWeek: 10,
       pricePerMonth: 30,
@@ -86,7 +109,7 @@ export const HomePage = () => {
       name: 'Folding Chairs',
       category: 'chairs',
       description: 'Durable folding chairs for any occasion',
-      image: 'https://via.placeholder.com/300x200?text=Folding+Chair',
+      image: getPlaceholderImage('Folding Chair'),
       pricePerDay: 1.5,
       pricePerWeek: 7,
       pricePerMonth: 20,
@@ -99,7 +122,7 @@ export const HomePage = () => {
       name: 'Cross Back Chairs',
       category: 'chairs',
       description: 'Rustic cross back chairs for elegant events',
-      image: 'https://via.placeholder.com/300x200?text=Cross+Back+Chair',
+      image: getPlaceholderImage('Cross Back Chair'),
       pricePerDay: 2.5,
       pricePerWeek: 12,
       pricePerMonth: 35,
@@ -112,7 +135,7 @@ export const HomePage = () => {
       name: 'Ghost Chairs',
       category: 'chairs',
       description: 'Modern transparent ghost chairs',
-      image: 'https://via.placeholder.com/300x200?text=Ghost+Chair',
+      image: getPlaceholderImage('Ghost Chair'),
       pricePerDay: 3,
       pricePerWeek: 14,
       pricePerMonth: 40,
@@ -129,7 +152,7 @@ export const HomePage = () => {
       name: 'Round Banquet Tables',
       category: 'tables',
       description: '60" round tables with capacity for 8-10 guests',
-      image: 'https://via.placeholder.com/300x200?text=Banquet+Table',
+      image: getPlaceholderImage('Banquet Table'),
       pricePerDay: 15,
       pricePerWeek: 70,
       pricePerMonth: 200,
@@ -142,7 +165,7 @@ export const HomePage = () => {
       name: 'Rectangular Banquet Tables',
       category: 'tables',
       description: 'Classic rectangular tables for formal events',
-      image: 'https://via.placeholder.com/300x200?text=Rectangular+Table',
+      image: getPlaceholderImage('Rectangular Table'),
       pricePerDay: 12,
       pricePerWeek: 55,
       pricePerMonth: 150,
@@ -155,7 +178,7 @@ export const HomePage = () => {
       name: 'High Top Cocktail Tables',
       category: 'tables',
       description: 'Modern high top tables for cocktail events',
-      image: 'https://via.placeholder.com/300x200?text=Cocktail+Table',
+      image: getPlaceholderImage('Cocktail Table'),
       pricePerDay: 8,
       pricePerWeek: 35,
       pricePerMonth: 100,
@@ -168,7 +191,7 @@ export const HomePage = () => {
       name: 'Farm Style Tables',
       category: 'tables',
       description: 'Rustic farm style tables for outdoor events',
-      image: 'https://via.placeholder.com/300x200?text=Farm+Table',
+      image: getPlaceholderImage('Farm Table'),
       pricePerDay: 18,
       pricePerWeek: 80,
       pricePerMonth: 220,
@@ -185,7 +208,7 @@ export const HomePage = () => {
       name: 'Chair Covers - Satin',
       category: 'chair-covers',
       description: 'Elegant satin chair covers in multiple colors',
-      image: 'https://via.placeholder.com/300x200?text=Satin+Cover',
+      image: getPlaceholderImage('Satin Cover'),
       pricePerDay: 0.5,
       pricePerWeek: 2,
       pricePerMonth: 5,
@@ -198,7 +221,7 @@ export const HomePage = () => {
       name: 'Chair Covers - Polyester',
       category: 'chair-covers',
       description: 'Durable polyester chair covers',
-      image: 'https://via.placeholder.com/300x200?text=Polyester+Cover',
+      image: getPlaceholderImage('Polyester Cover'),
       pricePerDay: 0.4,
       pricePerWeek: 1.8,
       pricePerMonth: 4,
@@ -211,7 +234,7 @@ export const HomePage = () => {
       name: 'Chair Covers - Premium',
       category: 'chair-covers',
       description: 'Premium quality chair covers with decorative sashes',
-      image: 'https://via.placeholder.com/300x200?text=Premium+Cover',
+      image: getPlaceholderImage('Premium Cover'),
       pricePerDay: 0.75,
       pricePerWeek: 3,
       pricePerMonth: 8,
@@ -224,7 +247,7 @@ export const HomePage = () => {
       name: 'Chair Covers - Spandex',
       category: 'chair-covers',
       description: 'Stretch spandex chair covers for modern look',
-      image: 'https://via.placeholder.com/300x200?text=Spandex+Cover',
+      image: getPlaceholderImage('Spandex Cover'),
       pricePerDay: 0.6,
       pricePerWeek: 2.5,
       pricePerMonth: 6,
@@ -264,7 +287,7 @@ export const HomePage = () => {
 
   return (
     <div className="home-page">
-      <div className="hero-section">
+      <div className="hero-section" style={heroImageUrl ? {backgroundImage: `url(${heroImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center'} : {}}>
         <div className="hero-content">
           <h1>Event Rentals Made Easy</h1>
           <p>Everything you need for your perfect event</p>
@@ -284,7 +307,11 @@ export const HomePage = () => {
             </button>
           </div>
           <div className="promo-image">
-            <img src="https://via.placeholder.com/500x300?text=Event+Setup" alt="Event Setup" />
+            {promoImageUrl ? (
+              <img src={promoImageUrl} alt="Premium Event Setup" style={{width: '100%', height: '300px', borderRadius: '8px', objectFit: 'cover'}} />
+            ) : (
+              <div style={{width: '500px', height: '300px', background: 'linear-gradient(135deg, #667eea, #764ba2)', borderRadius: '8px'}} />
+            )}
           </div>
         </div>
       </div>

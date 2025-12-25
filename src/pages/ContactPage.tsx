@@ -55,7 +55,7 @@ export const ContactPage = () => {
                 <FaPhone className="info-icon" />
                 <div>
                   <h3>Phone</h3>
-                  <p><a href="tel: 0240291516"> 0240291516 </a></p>
+                  <p><a href="tel:+233240291516">+233240291516</a></p>
                   <p className="small-text">Mon - Fri: 7:00 AM - 5:00 PM</p>
                 </div>
               </div>
@@ -193,7 +193,7 @@ export const ContactPage = () => {
           <div className="faq-grid">
             <div className="faq-item">
               <h3>What's your delivery radius?</h3>
-              <p>We deliver across London and surrounding areas. Contact us for delivery to other locations.</p>
+              <p>We deliver across Accra and surrounding areas. Contact us for delivery to other locations.</p>
             </div>
             <div className="faq-item">
               <h3>Can I customise my order?</h3>

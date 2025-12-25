@@ -17,14 +17,11 @@ export const AboutPage = () => {
           <div className="about-text">
             <h2>Who We Are</h2>
             <p>
-              FOJ Rentals is a leading event rental company dedicated to providing premium furniture, decorations, and event equipment for all types of occasions. With years of experience in the industry, we've become the go-to choice for customers who demand quality, reliability, and exceptional service.
+              FOJ Rentals is dedicated to making your events memorable and stress-free. With years of experience, we've become the trusted choice for customers who value quality and exceptional service.
             </p>
             <p>
               Our mission is simple: to make every event special by providing high-quality rental items and outstanding customer support. Whether you're planning an intimate dinner, a grand wedding, or a corporate event, we have everything you need to create the perfect atmosphere.
             </p>
-          </div>
-          <div className="about-image">
-            <img src="https://via.placeholder.com/500x400?text=About+FOJ+Rentals" alt="About Us" />
           </div>
         </div>
       </section>
@@ -86,7 +83,7 @@ export const AboutPage = () => {
         <div className="about-container">
           <div className="stats-grid">
             <div className="stat">
-              <h3>500+</h3>
+              <h3>100+</h3>
               <p>Happy Customers</p>
             </div>
             <div className="stat">

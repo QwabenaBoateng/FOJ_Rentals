@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
 import { useNavigate } from 'react-router-dom';
+import { FaUser } from 'react-icons/fa';
+import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
+import './LoginPage.css';
 
 export const LoginPage = () => {
   const { setUser, setIsLoggedIn } = useStore();
@@ -10,6 +13,7 @@ export const LoginPage = () => {
     password: '',
   });
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,21 +39,31 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-container">
-        <div className="auth-card">
-          <h1>Login</h1>
-          <p>Sign in to your FOJ Rentals account</p>
+    <div className="user-login-container">
+      <div className="user-login-wrapper">
+        <div className="user-login-card">
+          <div className="login-header">
+            <div className="login-icon">
+              <FaUser className="icon-large" />
+            </div>
+            <h1 className="login-title">Customer Login</h1>
+            <p className="login-subtitle">Sign in with your email and password</p>
+          </div>
 
-          {error && <div className="error-message">{error}</div>}
+          {error && (
+            <div className="error-message">
+              <p>{error}</p>
+            </div>
+          )}
 
-          <form onSubmit={handleSubmit}>
+          <form className="login-form" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Email Address</label>
+              <label className="form-label">Email</label>
               <input
                 type="email"
                 required
-                placeholder="your@email.com"
+                placeholder="user@example.com"
+                className="form-input"
                 value={formData.email}
                 onChange={(e) =>
                   setFormData({ ...formData, email: e.target.value })
@@ -58,16 +72,31 @@ export const LoginPage = () => {
             </div>
 
             <div className="form-group">
-              <label>Password</label>
-              <input
-                type="password"
-                required
-                placeholder="Your password"
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-              />
+              <label className="form-label">Password</label>
+              <div className="password-wrapper">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  placeholder="Your password"
+                  className="form-input password-input"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                />
+                <button
+                  type="button"
+                  className="toggle-password-btn"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label="Toggle password visibility"
+                >
+                  {showPassword ? (
+                    <AiOutlineEyeInvisible />
+                  ) : (
+                    <AiOutlineEye />
+                  )}
+                </button>
+              </div>
             </div>
 
             <button type="submit" className="submit-btn">
@@ -75,13 +104,18 @@ export const LoginPage = () => {
             </button>
           </form>
 
-          <div className="auth-footer">
+          <div className="login-footer">
             <p>
               Don't have an account?{' '}
-              <a onClick={() => navigate('/register')}>Sign up here</a>
+              <a href="#" className="user-login-link" onClick={() => navigate('/register')}>
+                Sign up here
+              </a>
             </p>
-            <p className="demo-hint">
-              Demo: Use email "admin@test.com" to access admin dashboard
+            <p className="admin-access-hint">
+              Admin?{' '}
+              <a href="#" className="user-login-link" onClick={() => navigate('/admin-login')}>
+                Login here
+              </a>
             </p>
           </div>
         </div>

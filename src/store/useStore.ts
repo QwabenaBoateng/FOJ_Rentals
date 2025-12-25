@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { RentalItem, CartItem, Order, User } from '../types';
+import { RentalItem, CartItem, Order, User, Admin } from '../types';
 
 interface Store {
   // Items
@@ -29,6 +29,13 @@ interface Store {
   setSelectedCategory: (category: string | null) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  
+  // Admins
+  admins: Admin[];
+  setAdmins: (admins: Admin[]) => void;
+  addAdmin: (admin: Admin) => void;
+  deleteAdmin: (adminId: string) => void;
+  updateAdmin: (adminId: string, admin: Partial<Admin>) => void;
 }
 
 export const useStore = create<Store>((set) => ({
@@ -84,4 +91,24 @@ export const useStore = create<Store>((set) => ({
   
   searchQuery: '',
   setSearchQuery: (query) => set({ searchQuery: query }),
+  
+  admins: [],
+  setAdmins: (admins) => set({ admins }),
+  
+  addAdmin: (admin) =>
+    set((state) => ({
+      admins: [...state.admins, admin],
+    })),
+  
+  deleteAdmin: (adminId) =>
+    set((state) => ({
+      admins: state.admins.filter((admin) => admin.id !== adminId),
+    })),
+  
+  updateAdmin: (adminId, updatedData) =>
+    set((state) => ({
+      admins: state.admins.map((admin) =>
+        admin.id === adminId ? { ...admin, ...updatedData } : admin
+      ),
+    })),
 }));

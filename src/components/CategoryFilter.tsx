@@ -7,8 +7,6 @@ const categories = [
   { id: 'tables', name: 'Tables', value: 'tables' },
   { id: 'chair-covers', name: 'Chair Covers', value: 'chair-covers' },
   { id: 'chafing-dishes', name: 'Chafing Dishes', value: 'chafing-dishes' },
-  { id: 'linens', name: 'Linens', value: 'linens' },
-  { id: 'decorations', name: 'Decorations', value: 'decorations' },
 ];
 
 export const CategoryFilter = () => {

@@ -2,7 +2,7 @@
 export interface RentalItem {
   id: string;
   name: string;
-  category: 'chairs' | 'tables' | 'chair-covers' | 'chafing-dishes' | 'linens' | 'decorations';
+  category: 'chairs' | 'tables' | 'chair-covers' | 'chafing-dishes';
   description: string;
   image: string;
   pricePerDay: number;
@@ -47,4 +47,13 @@ export interface AdminStats {
   activeRentals: number;
   totalCustomers: number;
   monthlyRevenue: number[];
+}
+
+export interface Admin {
+  id: string;
+  email: string;
+  name: string;
+  role: 'super_admin' | 'admin';
+  createdAt: Date;
+  isActive: boolean;
 }

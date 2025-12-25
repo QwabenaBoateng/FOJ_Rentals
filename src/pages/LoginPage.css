@@ -1,0 +1,294 @@
+.user-login-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #3b4d99 0%, #5a3fa0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+}
+
+.user-login-wrapper {
+  width: 100%;
+  max-width: 420px;
+}
+
+.user-login-card {
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  padding: 2.5rem;
+  text-align: center;
+}
+
+.user-login-card .login-header {
+  margin-bottom: 2rem;
+}
+
+.user-login-card .login-icon {
+  width: 64px;
+  height: 64px;
+  background: #3b4d99;
+  border-radius: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  box-shadow: 0 8px 20px rgba(59, 77, 153, 0.2);
+}
+
+.user-login-card .login-icon .icon-large {
+  font-size: 2rem;
+  color: white;
+}
+
+.user-login-card .login-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #2d3748;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.3px;
+}
+
+.user-login-card .login-subtitle {
+  font-size: 0.9rem;
+  color: #718096;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Form */
+.user-login-card .login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.user-login-card .form-group {
+  display: flex !important;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0 !important;
+}
+
+.user-login-card .form-label {
+  color: #2d3748;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+  margin: 0;
+  display: block;
+}
+
+.user-login-card .form-input {
+  width: 100%;
+  padding: 0.875rem 1rem !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 0.625rem !important;
+  font-size: 0.95rem !important;
+  transition: all 0.3s ease;
+  background: #f8fafc !important;
+  color: #2d3748 !important;
+  font-weight: 500 !important;
+  font-family: inherit;
+  box-shadow: none !important;
+}
+
+.user-login-card .form-input:focus {
+  outline: none !important;
+  border-color: #3b4d99 !important;
+  background: white !important;
+  box-shadow: 0 0 0 3px rgba(59, 77, 153, 0.1) !important;
+}
+
+.user-login-card .form-input::placeholder {
+  color: #cbd5e0;
+  font-weight: 400;
+}
+
+.user-login-card .password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.user-login-card .password-input {
+  padding-right: 2.5rem !important;
+}
+
+.user-login-card .toggle-password-btn {
+  position: absolute;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #a0aec0;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+
+.user-login-card .toggle-password-btn:hover {
+  color: #3b4d99;
+}
+
+/* Error Message */
+.user-login-card .error-message {
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 0.625rem;
+  padding: 0.875rem 1rem;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.user-login-card .error-message p {
+  margin: 0;
+  color: #991b1b;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* Submit Button */
+.user-login-card .submit-btn {
+  width: 100%;
+  padding: 0.9375rem 1.5rem !important;
+  background: #3b4d99 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 0.625rem !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
+  display: inline-block;
+  min-height: auto !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+}
+
+.user-login-card .submit-btn:hover:not(:disabled) {
+  background: #2d3d7a !important;
+  box-shadow: 0 8px 20px rgba(59, 77, 153, 0.3) !important;
+  transform: translateY(-1px);
+}
+
+.user-login-card .submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.user-login-card .submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Demo Credentials */
+.user-login-card .demo-credentials-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.user-login-card .demo-label {
+  margin: 0 0 0.75rem 0;
+  color: #2d3748;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.user-login-card .credential-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  color: #2d3748;
+  font-size: 0.875rem;
+}
+
+.user-login-card .credential-label {
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.user-login-card .credential-value {
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  color: #3b4d99;
+}
+
+/* Footer */
+.user-login-card .login-footer {
+  text-align: center;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.user-login-card .login-footer p {
+  margin: 0.5rem 0;
+  color: #4a5568;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.user-login-card .admin-access-hint {
+  margin-top: 0.75rem;
+  color: #a0aec0;
+  font-size: 0.8rem;
+}
+
+.user-login-card .user-login-link {
+  color: #3b4d99;
+  text-decoration: none;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.user-login-card .user-login-link:hover {
+  color: #2d3d7a;
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .user-login-card {
+    padding: 2rem 1.5rem;
+    border-radius: 1.25rem;
+  }
+
+  .user-login-card .login-title {
+    font-size: 1.5rem;
+  }
+
+  .user-login-card .login-icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .user-login-card .login-icon .icon-large {
+    font-size: 1.75rem;
+  }
+
+  .user-login-card .submit-btn {
+    padding: 0.8rem 1rem !important;
+    font-size: 0.9rem !important;
+  }
+
+  .user-login-card .login-form {
+    gap: 1rem;
+  }
+}

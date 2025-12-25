@@ -67,22 +67,22 @@ export const CartPage = () => {
               
               <div className="summary-line">
                 <span>Subtotal:</span>
-                <span>${calculateTotal().toFixed(2)}</span>
+                <span>₵{calculateTotal().toFixed(2)}</span>
               </div>
               
               <div className="summary-line">
                 <span>Delivery Fee:</span>
-                <span>$25.00</span>
+                <span>₵25.00</span>
               </div>
               
               <div className="summary-line">
                 <span>Tax (10%):</span>
-                <span>${(calculateTotal() * 0.1).toFixed(2)}</span>
+                <span>₵{(calculateTotal() * 0.1).toFixed(2)}</span>
               </div>
               
               <div className="summary-total">
                 <span>Total:</span>
-                <span>${(calculateTotal() * 1.1 + 25).toFixed(2)}</span>
+                <span>₵{(calculateTotal() * 1.1 + 25).toFixed(2)}</span>
               </div>
 
               {!showCheckout ? (

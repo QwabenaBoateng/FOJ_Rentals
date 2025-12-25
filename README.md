@@ -189,4 +189,4 @@ Private project - FOJ Rentals
 
 ## Contact
 
-For questions or support, contact: info@fojrentals.com
+For questions or support, contact: fojrentals@gmail.com

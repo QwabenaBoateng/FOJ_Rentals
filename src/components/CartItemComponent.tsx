@@ -49,7 +49,7 @@ export const CartItemComponent = ({
       </div>
       
       <div className="cart-item-price">
-        <span className="total">${getPrice().toFixed(2)}</span>
+        <span className="total">₵{getPrice().toFixed(2)}</span>
       </div>
       
       <button className="remove-btn" onClick={onRemove}>

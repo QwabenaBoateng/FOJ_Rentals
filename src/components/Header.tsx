@@ -39,8 +39,6 @@ export const Header = () => {
     { id: 'tables', name: 'Tables' },
     { id: 'chair-covers', name: 'Chair Covers' },
     { id: 'chafing-dishes', name: 'Chafing Dishes' },
-    { id: 'linens', name: 'Linens' },
-    { id: 'decorations', name: 'Decorations' },
   ];
 
   return (

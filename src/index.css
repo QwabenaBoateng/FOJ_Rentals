@@ -504,9 +504,8 @@ input:focus, select:focus, textarea:focus {
 
 /* Home Page */
 .hero-section {
-  background: linear-gradient(135deg, rgba(217, 70, 166, 0.9), rgba(194, 24, 91, 0.9)), 
-              url('https://via.placeholder.com/1400x500?text=Event+Rentals');
-  background-size: cover, contain;
+  background: linear-gradient(135deg, #d946a6, #c2185b);
+  background-size: cover;
   background-position: center;
   color: white;
   padding: 140px 20px;
@@ -567,8 +566,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 .promo-banner {
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(217, 70, 166, 0.2)), 
-              url('https://via.placeholder.com/1400x400?text=Premium+Event+Setup');
+  background: linear-gradient(135deg, #667eea, #764ba2);
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -1956,6 +1954,31 @@ tbody tr:hover {
   color: white;
 }
 
+.social-links {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.social-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+  font-size: 1.25rem;
+}
+
+.social-links a:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  transform: scale(1.1);
+}
+
 .footer-bottom {
   background: rgba(0, 0, 0, 0.2);
   text-align: center;
@@ -2715,8 +2738,7 @@ tbody tr:hover {
 }
 
 .about-hero {
-  background: linear-gradient(135deg, rgba(217, 70, 166, 0.9), rgba(194, 24, 91, 0.9)), 
-              url('https://via.placeholder.com/1400x500?text=About+FOJ+Rentals');
+  background: linear-gradient(135deg, #d946a6, #c2185b);
   background-size: cover;
   background-position: center;
   color: white;
@@ -2936,8 +2958,7 @@ tbody tr:hover {
 }
 
 .contact-hero {
-  background: linear-gradient(135deg, rgba(217, 70, 166, 0.9), rgba(194, 24, 91, 0.9)), 
-              url('https://via.placeholder.com/1400x500?text=Contact+Us');
+  background: linear-gradient(135deg, #d946a6, #c2185b);
   background-size: cover;
   background-position: center;
   color: white;
