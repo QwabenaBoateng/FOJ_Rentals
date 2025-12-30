@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { FaBox, FaShoppingCart, FaChartBar, FaCog, FaTag, FaUsers, FaSignOutAlt, FaImage } from 'react-icons/fa';
+import { FaBox, FaShoppingCart, FaChartBar, FaStar, FaTag, FaUsers, FaSignOutAlt, FaImage } from 'react-icons/fa';
 import { AdminDashboard } from './AdminDashboard';
 import { InventoryManagement } from './InventoryManagement';
 import { ProductManagement } from './ProductManagement';
 import { OrderManagement } from './OrderManagement';
 import { ManageAdmins } from './ManageAdmins';
 import { ImageManagement } from './ImageManagement';
+import { FeaturedManagement } from './FeaturedManagement';
 import './AdminPanel.css';
 
-type AdminTab = 'dashboard' | 'inventory' | 'products' | 'orders' | 'settings' | 'admins' | 'images';
+type AdminTab = 'dashboard' | 'inventory' | 'products' | 'orders' | 'featured' | 'admins' | 'images';
 
 interface AdminPanelProps {
   username?: string;
@@ -28,8 +29,8 @@ export const AdminPanel = ({ username = 'Admin', onLogout }: AdminPanelProps) =>
         return <ProductManagement />;
       case 'orders':
         return <OrderManagement />;
-      case 'settings':
-        return <div className="settings-page"><h1>Settings</h1><p>Admin settings coming soon...</p></div>;
+      case 'featured':
+        return <FeaturedManagement />;
       case 'admins':
         return <ManageAdmins />;
       case 'images':
@@ -72,10 +73,10 @@ export const AdminPanel = ({ username = 'Admin', onLogout }: AdminPanelProps) =>
             <FaShoppingCart /> Orders
           </button>
           <button
-            className={`nav-btn ${activeTab === 'settings' ? 'active' : ''}`}
-            onClick={() => setActiveTab('settings')}
+            className={`nav-btn ${activeTab === 'featured' ? 'active' : ''}`}
+            onClick={() => setActiveTab('featured')}
           >
-            <FaCog /> Settings
+            <FaStar /> Featured
           </button>
           <button
             className={`nav-btn ${activeTab === 'admins' ? 'active' : ''}`}

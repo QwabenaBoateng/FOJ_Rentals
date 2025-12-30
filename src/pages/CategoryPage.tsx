@@ -4,8 +4,58 @@ import { RentalCard } from '../components/RentalCard';
 import { RentalItem } from '../types';
 
 export const CategoryPage = () => {
-  const { items, selectedCategory, setSelectedCategory, searchQuery, addToCart } = useStore();
+  const { items, setItems, selectedCategory, setSelectedCategory, searchQuery, addToCart } = useStore();
   const [filteredItems, setFilteredItems] = useState(items);
+
+  // Load admin products on mount if not already loaded
+  useEffect(() => {
+    const loadAdminProducts = () => {
+      try {
+        const savedProducts = localStorage.getItem('adminProducts');
+        if (savedProducts && items.length === 0) {
+          const products = JSON.parse(savedProducts);
+          const adminRentalItems = products.map((product: any) => ({
+            id: product.id.toString(),
+            name: product.name,
+            category: mapCategoryToRentalItem(product.category),
+            description: product.description || '',
+            image: product.image || '',
+            pricePerDay: parseFloat(product.price) || 0,
+            pricePerWeek: parseFloat(product.price) * 5 || 0,
+            pricePerMonth: parseFloat(product.price) * 20 || 0,
+            stock: product.stock || 10,
+            rating: product.rating || 4.5,
+            reviews: product.reviews || 0
+          }));
+          setItems(adminRentalItems);
+        }
+      } catch (error) {
+        console.error('Error loading products:', error);
+      }
+    };
+
+    loadAdminProducts();
+
+    // Listen for product updates
+    const handleProductsUpdate = () => {
+      loadAdminProducts();
+    };
+    window.addEventListener('productsUpdated', handleProductsUpdate);
+    
+    return () => {
+      window.removeEventListener('productsUpdated', handleProductsUpdate);
+    };
+  }, []);
+
+  const mapCategoryToRentalItem = (category: string): 'chairs' | 'tables' | 'chair-covers' | 'chafing-dishes' => {
+    const mapping: { [key: string]: 'chairs' | 'tables' | 'chair-covers' | 'chafing-dishes' } = {
+      'Chairs': 'chairs',
+      'Tables': 'tables',
+      'Chair Covers': 'chair-covers',
+      'Chafing Dishes': 'chafing-dishes'
+    };
+    return mapping[category] || 'chairs';
+  };
 
   useEffect(() => {
     let filtered = items;

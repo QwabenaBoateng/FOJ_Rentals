@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaPlus, FaTrash, FaEdit, FaTimes, FaBox } from 'react-icons/fa';
+import { useStore } from '../../store/useStore';
 import './ProductManagement.css';
 
 export const ProductManagement = () => {
@@ -10,6 +11,7 @@ export const ProductManagement = () => {
     'Chafing Dishes'
   ];
 
+  const { items, setItems } = useStore();
   const [selectedCategory, setSelectedCategory] = useState<string>(categories[0]);
   const [products, setProducts] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -22,13 +24,62 @@ export const ProductManagement = () => {
     imagePreview: ''
   });
 
+  // Load products from localStorage on mount
+  useEffect(() => {
+    const savedProducts = localStorage.getItem('adminProducts');
+    if (savedProducts) {
+      try {
+        const parsed = JSON.parse(savedProducts);
+        setProducts(parsed);
+        syncProductsToStore(parsed);
+      } catch (error) {
+        console.error('Error loading products:', error);
+      }
+    }
+  }, []);
+
+  // Sync products to store whenever products change
+  const syncProductsToStore = (productsToSync: any[]) => {
+    const rentalItems = productsToSync.map(product => ({
+      id: product.id.toString(),
+      name: product.name,
+      category: mapCategoryToRentalItem(product.category),
+      description: product.description || '',
+      image: product.image || '',
+      pricePerDay: parseFloat(product.price) || 0,
+      pricePerWeek: parseFloat(product.price) * 5 || 0,
+      pricePerMonth: parseFloat(product.price) * 20 || 0,
+      stock: product.stock || 10,
+      rating: product.rating || 4.5,
+      reviews: product.reviews || 0
+    }));
+    
+    // Merge with existing items, updating existing ones and adding new ones
+    const existingItems = items.filter(item => 
+      !productsToSync.some(p => p.id.toString() === item.id)
+    );
+    setItems([...existingItems, ...rentalItems]);
+  };
+
+  const mapCategoryToRentalItem = (category: string): 'chairs' | 'tables' | 'chair-covers' | 'chafing-dishes' => {
+    const mapping: { [key: string]: 'chairs' | 'tables' | 'chair-covers' | 'chafing-dishes' } = {
+      'Chairs': 'chairs',
+      'Tables': 'tables',
+      'Chair Covers': 'chair-covers',
+      'Chafing Dishes': 'chafing-dishes'
+    };
+    return mapping[category] || 'chairs';
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Create preview
+      const previewUrl = URL.createObjectURL(file);
       setFormData(prev => ({
         ...prev,
         image: file,
-        imagePreview: URL.createObjectURL(file)
+        imagePreview: previewUrl
       }));
     }
   };
@@ -49,23 +100,83 @@ export const ProductManagement = () => {
       return;
     }
 
-    const newProduct = {
-      id: editingProduct?.id || Date.now(),
-      name: formData.name,
-      description: formData.description,
-      price: formData.price,
-      category: selectedCategory,
-      image: formData.imagePreview || editingProduct?.image
-    };
+    // Convert image to base64 if a new file is selected
+    let imageData = editingProduct?.image || '';
+    if (formData.image) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64Image = event.target?.result as string;
+        imageData = base64Image;
+        
+        const newProduct = {
+          id: editingProduct?.id || Date.now(),
+          name: formData.name,
+          description: formData.description,
+          price: formData.price,
+          category: selectedCategory,
+          image: base64Image,
+          stock: editingProduct?.stock || 10,
+          rating: editingProduct?.rating || 4.5,
+          reviews: editingProduct?.reviews || 0
+        };
 
-    if (editingProduct) {
-      setProducts(prev => prev.map(p => p.id === editingProduct.id ? newProduct : p));
+        let updatedProducts;
+        if (editingProduct) {
+          updatedProducts = products.map(p => p.id === editingProduct.id ? newProduct : p);
+        } else {
+          updatedProducts = [...products, newProduct];
+        }
+
+        setProducts(updatedProducts);
+        localStorage.setItem('adminProducts', JSON.stringify(updatedProducts));
+        
+        // Sync to store
+        syncProductsToStore(updatedProducts);
+        
+        // Dispatch custom event to notify other components
+        window.dispatchEvent(new CustomEvent('productsUpdated'));
+
+        resetForm();
+        setShowModal(false);
+      };
+      reader.onerror = () => {
+        alert('Error reading image file. Please try again.');
+      };
+      reader.readAsDataURL(formData.image);
+      return; // Exit early, will continue in reader.onload
     } else {
-      setProducts(prev => [...prev, newProduct]);
-    }
+      // No new image, use existing or empty
+      const newProduct = {
+        id: editingProduct?.id || Date.now(),
+        name: formData.name,
+        description: formData.description,
+        price: formData.price,
+        category: selectedCategory,
+        image: imageData,
+        stock: editingProduct?.stock || 10,
+        rating: editingProduct?.rating || 4.5,
+        reviews: editingProduct?.reviews || 0
+      };
 
-    resetForm();
-    setShowModal(false);
+      let updatedProducts;
+      if (editingProduct) {
+        updatedProducts = products.map(p => p.id === editingProduct.id ? newProduct : p);
+      } else {
+        updatedProducts = [...products, newProduct];
+      }
+
+      setProducts(updatedProducts);
+      localStorage.setItem('adminProducts', JSON.stringify(updatedProducts));
+      
+      // Sync to store
+      syncProductsToStore(updatedProducts);
+      
+      // Dispatch custom event to notify other components
+      window.dispatchEvent(new CustomEvent('productsUpdated'));
+
+      resetForm();
+      setShowModal(false);
+    }
   };
 
   const resetForm = () => {
@@ -77,6 +188,12 @@ export const ProductManagement = () => {
       imagePreview: ''
     });
     setEditingProduct(null);
+    
+    // Reset file input
+    const fileInput = document.getElementById('image') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
 
   const openAddModal = () => {
@@ -102,7 +219,17 @@ export const ProductManagement = () => {
   };
 
   const handleDeleteProduct = (id: number) => {
-    setProducts(prev => prev.filter(p => p.id !== id));
+    if (confirm('Are you sure you want to delete this product?')) {
+      const updatedProducts = products.filter(p => p.id !== id);
+      setProducts(updatedProducts);
+      localStorage.setItem('adminProducts', JSON.stringify(updatedProducts));
+      
+      // Sync to store
+      syncProductsToStore(updatedProducts);
+      
+      // Dispatch custom event to notify other components
+      window.dispatchEvent(new CustomEvent('productsUpdated'));
+    }
   };
 
   const categoryProducts = products.filter(p => p.category === selectedCategory);

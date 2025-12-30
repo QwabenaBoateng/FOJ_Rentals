@@ -21,15 +21,60 @@ export const HomePage = () => {
 
   // Load banner images from localStorage
   useEffect(() => {
-    const savedImages = localStorage.getItem('bannerImages');
-    if (savedImages) {
-      const images = JSON.parse(savedImages);
-      const heroImage = images.find((img: any) => img.type === 'hero');
-      const promoImage = images.find((img: any) => img.type === 'promo');
-      
-      if (heroImage) setHeroImageUrl(heroImage.imageData);
-      if (promoImage) setPromoImageUrl(promoImage.imageData);
-    }
+    const loadImages = () => {
+      try {
+        const savedImages = localStorage.getItem('bannerImages');
+        if (savedImages) {
+          const images = JSON.parse(savedImages);
+          // Get the most recent image of each type
+          const heroImages = images.filter((img: any) => img.type === 'hero' && img.imageData);
+          const promoImages = images.filter((img: any) => img.type === 'promo' && img.imageData);
+          
+          // Sort by uploadedDate (most recent first) and get the first one
+          if (heroImages.length > 0) {
+            const heroImage = heroImages.sort((a: any, b: any) => {
+              const dateA = new Date(a.uploadedDate).getTime() || 0;
+              const dateB = new Date(b.uploadedDate).getTime() || 0;
+              return dateB - dateA;
+            })[0];
+            if (heroImage?.imageData) setHeroImageUrl(heroImage.imageData);
+          }
+          
+          if (promoImages.length > 0) {
+            const promoImage = promoImages.sort((a: any, b: any) => {
+              const dateA = new Date(a.uploadedDate).getTime() || 0;
+              const dateB = new Date(b.uploadedDate).getTime() || 0;
+              return dateB - dateA;
+            })[0];
+            if (promoImage?.imageData) setPromoImageUrl(promoImage.imageData);
+          } else {
+            setPromoImageUrl(''); // Clear if no promo images
+          }
+        }
+      } catch (error) {
+        console.error('Error loading banner images:', error);
+      }
+    };
+
+    // Load on initial mount
+    loadImages();
+
+    // Listen for custom event (for same-tab updates)
+    const handleBannerImagesUpdate = () => {
+      loadImages();
+    };
+    window.addEventListener('bannerImagesUpdated', handleBannerImagesUpdate);
+    
+    // Also listen for storage changes (for cross-tab updates)
+    const handleStorageChange = () => {
+      loadImages();
+    };
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('bannerImagesUpdated', handleBannerImagesUpdate);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   // Mock data - in real app, this would come from API
@@ -265,12 +310,64 @@ export const HomePage = () => {
   ];
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setItems(mockItems);
-      setLoading(false);
-    }, 500);
+    // Load admin products from localStorage
+    const loadAdminProducts = () => {
+      try {
+        const savedProducts = localStorage.getItem('adminProducts');
+        if (savedProducts) {
+          const products = JSON.parse(savedProducts);
+          const adminRentalItems = products.map((product: any) => ({
+            id: product.id.toString(),
+            name: product.name,
+            category: mapCategoryToRentalItem(product.category),
+            description: product.description || '',
+            image: product.image || getPlaceholderImage(product.name),
+            pricePerDay: parseFloat(product.price) || 0,
+            pricePerWeek: parseFloat(product.price) * 5 || 0,
+            pricePerMonth: parseFloat(product.price) * 20 || 0,
+            stock: product.stock || 10,
+            rating: product.rating || 4.5,
+            reviews: product.reviews || 0
+          }));
+          
+          // Merge admin products with mock items (admin products take precedence if same ID)
+          const existingIds = new Set(adminRentalItems.map((item: RentalItem) => item.id));
+          const filteredMockItems = mockItems.filter(item => !existingIds.has(item.id));
+          setItems([...filteredMockItems, ...adminRentalItems]);
+        } else {
+          setItems(mockItems);
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error('Error loading products:', error);
+        setItems(mockItems);
+        setLoading(false);
+      }
+    };
+
+    // Load on initial mount
+    loadAdminProducts();
+
+    // Listen for product updates
+    const handleProductsUpdate = () => {
+      loadAdminProducts();
+    };
+    window.addEventListener('productsUpdated', handleProductsUpdate);
+    
+    return () => {
+      window.removeEventListener('productsUpdated', handleProductsUpdate);
+    };
   }, []);
+
+  const mapCategoryToRentalItem = (category: string): 'chairs' | 'tables' | 'chair-covers' | 'chafing-dishes' => {
+    const mapping: { [key: string]: 'chairs' | 'tables' | 'chair-covers' | 'chafing-dishes' } = {
+      'Chairs': 'chairs',
+      'Tables': 'tables',
+      'Chair Covers': 'chair-covers',
+      'Chafing Dishes': 'chafing-dishes'
+    };
+    return mapping[category] || 'chairs';
+  };
 
   const filteredItems = mockItems.filter((item) => {
     const matchesSearch = true; // Show all items on homepage
@@ -280,6 +377,40 @@ export const HomePage = () => {
   const handleAddToCart = (item: RentalItem) => {
     addToCart(item, 1, 'day', new Date(), new Date());
   };
+
+  // Get products by category from items (which includes admin products)
+  const getCategoryItems = (category: 'chafing-dishes' | 'chairs' | 'tables' | 'chair-covers', mockItems: RentalItem[]) => {
+    const categoryItems = items.filter(item => item.category === category);
+    
+    // Filter to show only items with real uploaded images (base64 jpeg/png/webp, not SVG placeholders)
+    const itemsWithImages = categoryItems.filter(item => {
+      if (!item.image) return false;
+      // Check if it's a real uploaded image (base64 jpeg/png/webp) or external URL
+      const isRealImage = item.image.startsWith('data:image/jpeg') || 
+                          item.image.startsWith('data:image/jpg') ||
+                          item.image.startsWith('data:image/png') ||
+                          item.image.startsWith('data:image/webp') ||
+                          item.image.startsWith('data:image/gif') ||
+                          (item.image.startsWith('http://') || item.image.startsWith('https://'));
+      // Exclude SVG placeholders
+      const isNotPlaceholder = !item.image.includes('data:image/svg');
+      return isRealImage && isNotPlaceholder;
+    });
+    
+    // If we have items with real images, use those; otherwise fall back to mock data
+    if (itemsWithImages.length > 0) {
+      return itemsWithImages.slice(0, 4);
+    }
+    
+    // Fall back to mock items if no admin products with images exist
+    return mockItems.filter(item => item.category === category).slice(0, 4);
+  };
+
+  // Get featured items for each category
+  const featuredChafingDishes = getCategoryItems('chafing-dishes', chafiing_dishes);
+  const featuredChairs = getCategoryItems('chairs', chairs);
+  const featuredTables = getCategoryItems('tables', tables);
+  const featuredChairCovers = getCategoryItems('chair-covers', chairCovers);
 
   if (loading) {
     return <div className="loading">Loading rental items...</div>;
@@ -297,7 +428,14 @@ export const HomePage = () => {
         </div>
       </div>
 
-      <div className="promo-banner">
+      <div 
+        className="promo-banner"
+        style={promoImageUrl ? {
+          backgroundImage: `url(${promoImageUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        } : {}}
+      >
         <div className="promo-content">
           <div className="promo-text">
             <h2>Premium Event Setup</h2>
@@ -305,13 +443,6 @@ export const HomePage = () => {
             <button className="promo-btn" onClick={() => navigate('/category')}>
               View All Items →
             </button>
-          </div>
-          <div className="promo-image">
-            {promoImageUrl ? (
-              <img src={promoImageUrl} alt="Premium Event Setup" style={{width: '100%', height: '300px', borderRadius: '8px', objectFit: 'cover'}} />
-            ) : (
-              <div style={{width: '500px', height: '300px', background: 'linear-gradient(135deg, #667eea, #764ba2)', borderRadius: '8px'}} />
-            )}
           </div>
         </div>
       </div>
@@ -324,13 +455,19 @@ export const HomePage = () => {
             <p>Professional chafing dish sets for food service</p>
           </div>
           <div className="featured-grid">
-            {chafiing_dishes.map((item) => (
-              <RentalCard
-                key={item.id}
-                item={item}
-                onAddToCart={handleAddToCart}
-              />
-            ))}
+            {featuredChafingDishes.length > 0 ? (
+              featuredChafingDishes.map((item) => (
+                <RentalCard
+                  key={item.id}
+                  item={item}
+                  onAddToCart={handleAddToCart}
+                />
+              ))
+            ) : (
+              <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#666', padding: '2rem' }}>
+                No chafing dishes available. Add products in the admin panel to see them here.
+              </p>
+            )}
           </div>
         </div>
 
@@ -341,13 +478,19 @@ export const HomePage = () => {
             <p>Wide selection of elegant and comfortable chairs</p>
           </div>
           <div className="featured-grid">
-            {chairs.map((item) => (
-              <RentalCard
-                key={item.id}
-                item={item}
-                onAddToCart={handleAddToCart}
-              />
-            ))}
+            {featuredChairs.length > 0 ? (
+              featuredChairs.map((item) => (
+                <RentalCard
+                  key={item.id}
+                  item={item}
+                  onAddToCart={handleAddToCart}
+                />
+              ))
+            ) : (
+              <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#666', padding: '2rem' }}>
+                No chairs available. Add products in the admin panel to see them here.
+              </p>
+            )}
           </div>
         </div>
 
@@ -358,13 +501,19 @@ export const HomePage = () => {
             <p>Beautiful tables for any event size</p>
           </div>
           <div className="featured-grid">
-            {tables.map((item) => (
-              <RentalCard
-                key={item.id}
-                item={item}
-                onAddToCart={handleAddToCart}
-              />
-            ))}
+            {featuredTables.length > 0 ? (
+              featuredTables.map((item) => (
+                <RentalCard
+                  key={item.id}
+                  item={item}
+                  onAddToCart={handleAddToCart}
+                />
+              ))
+            ) : (
+              <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#666', padding: '2rem' }}>
+                No tables available. Add products in the admin panel to see them here.
+              </p>
+            )}
           </div>
         </div>
 
@@ -375,13 +524,19 @@ export const HomePage = () => {
             <p>Transform your chairs with elegant covers</p>
           </div>
           <div className="featured-grid">
-            {chairCovers.map((item) => (
-              <RentalCard
-                key={item.id}
-                item={item}
-                onAddToCart={handleAddToCart}
-              />
-            ))}
+            {featuredChairCovers.length > 0 ? (
+              featuredChairCovers.map((item) => (
+                <RentalCard
+                  key={item.id}
+                  item={item}
+                  onAddToCart={handleAddToCart}
+                />
+              ))
+            ) : (
+              <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#666', padding: '2rem' }}>
+                No chair covers available. Add products in the admin panel to see them here.
+              </p>
+            )}
           </div>
         </div>
       </div>

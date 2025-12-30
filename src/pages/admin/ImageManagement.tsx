@@ -23,7 +23,18 @@ export const ImageManagement = () => {
     // Load images from localStorage
     const savedImages = localStorage.getItem('bannerImages');
     if (savedImages) {
-      setImages(JSON.parse(savedImages));
+      try {
+        const parsed = JSON.parse(savedImages);
+        // Convert date strings back to Date objects
+        const imagesWithDates = parsed.map((img: any) => ({
+          ...img,
+          uploadedDate: new Date(img.uploadedDate)
+        }));
+        setImages(imagesWithDates);
+      } catch (error) {
+        console.error('Error loading images:', error);
+        setImages([]);
+      }
     }
     setLoading(false);
   }, []);
@@ -53,27 +64,55 @@ export const ImageManagement = () => {
     setUploading(true);
     const reader = new FileReader();
     reader.onload = (event) => {
-      const imageData = event.target?.result as string;
-      
-      const newImage: BannerImage = {
-        id: Date.now().toString(),
-        name: imageName,
-        type: imageType,
-        imageData: imageData,
-        uploadedDate: new Date(),
-      };
+      try {
+        const imageData = event.target?.result as string;
+        
+        const newImage: BannerImage = {
+          id: Date.now().toString(),
+          name: imageName,
+          type: imageType,
+          imageData: imageData,
+          uploadedDate: new Date(),
+        };
 
-      const updatedImages = [...images, newImage];
-      setImages(updatedImages);
-      localStorage.setItem('bannerImages', JSON.stringify(updatedImages));
+        const updatedImages = [...images, newImage];
+        setImages(updatedImages);
+        
+        // Convert dates to ISO strings for storage
+        const imagesForStorage = updatedImages.map(img => ({
+          ...img,
+          uploadedDate: img.uploadedDate.toISOString()
+        }));
+        localStorage.setItem('bannerImages', JSON.stringify(imagesForStorage));
 
-      // Reset form
-      setSelectedFile(null);
-      setPreviewUrl('');
-      setImageName('');
-      setUploading(false);
-      alert('Image uploaded successfully!');
+        // Dispatch custom event to notify other components in the same tab
+        window.dispatchEvent(new CustomEvent('bannerImagesUpdated'));
+
+        // Reset form
+        setSelectedFile(null);
+        setPreviewUrl('');
+        setImageName('');
+        
+        // Reset file input
+        const fileInput = document.getElementById('imageInput') as HTMLInputElement;
+        if (fileInput) {
+          fileInput.value = '';
+        }
+        
+        setUploading(false);
+        alert('Image uploaded successfully!');
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        alert('Failed to upload image. Please try again.');
+        setUploading(false);
+      }
     };
+    
+    reader.onerror = () => {
+      alert('Error reading file. Please try again.');
+      setUploading(false);
+    };
+    
     reader.readAsDataURL(selectedFile);
   };
 
@@ -81,7 +120,16 @@ export const ImageManagement = () => {
     if (confirm('Are you sure you want to delete this image?')) {
       const updatedImages = images.filter((img) => img.id !== id);
       setImages(updatedImages);
-      localStorage.setItem('bannerImages', JSON.stringify(updatedImages));
+      
+      // Convert dates to ISO strings for storage
+      const imagesForStorage = updatedImages.map(img => ({
+        ...img,
+        uploadedDate: img.uploadedDate.toISOString()
+      }));
+      localStorage.setItem('bannerImages', JSON.stringify(imagesForStorage));
+      
+      // Dispatch custom event to notify other components in the same tab
+      window.dispatchEvent(new CustomEvent('bannerImagesUpdated'));
     }
   };
 
