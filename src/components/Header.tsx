@@ -1,5 +1,5 @@
 import { useStore } from '../store/useStore';
-import { FaShoppingCart, FaUser, FaSignOutAlt, FaPhone, FaSearch } from 'react-icons/fa';
+import { FaShoppingCart, FaUser, FaSignOutAlt, FaPhone, FaSearch, FaBars, FaTimes } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 
@@ -9,6 +9,7 @@ export const Header = () => {
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Hide header on admin routes
   if (location.pathname.startsWith('/admin')) {
@@ -19,6 +20,11 @@ export const Header = () => {
     setUser(null);
     setIsLoggedIn(false);
     navigate('/');
+  };
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    setMobileMenuOpen(false);
   };
 
   const handleSearch = () => {
@@ -61,6 +67,13 @@ export const Header = () => {
           </nav>
 
           <div className="top-actions">
+            <button 
+              className="mobile-menu-btn"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              title="Menu"
+            >
+              {mobileMenuOpen ? <FaTimes /> : <FaBars />}
+            </button>
             <div className="search-container">
               <input
                 type="text"
@@ -109,6 +122,36 @@ export const Header = () => {
           </div>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="mobile-menu">
+          <button 
+            className="mobile-menu-item"
+            onClick={() => handleNavigate('/')}
+          >
+            Home
+          </button>
+          <button 
+            className="mobile-menu-item"
+            onClick={() => handleNavigate('/about')}
+          >
+            About Us
+          </button>
+          <button 
+            className="mobile-menu-item"
+            onClick={() => handleNavigate('/category')}
+          >
+            Category
+          </button>
+          <button 
+            className="mobile-menu-item"
+            onClick={() => handleNavigate('/contact')}
+          >
+            Contact Us
+          </button>
+        </div>
+      )}
     </>
   );
 };
